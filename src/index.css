@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Yield Bearing Protocols — Pixel / White Mode Design System */
+
+@layer base {
+  :root {
+    /* Dark mode - terminal/retro aesthetic */
+    --background: 220 15% 8%;
+    --foreground: 60 10% 90%;
+    
+    /* Card surfaces */
+    --card: 220 15% 12%;
+    --card-foreground: 60 10% 90%;
+    
+    /* Popover */
+    --popover: 220 15% 12%;
+    --popover-foreground: 60 10% 90%;
+    
+    /* Primary - muted pink accent */
+    --primary: 350 60% 65%;
+    --primary-foreground: 0 0% 100%;
+    
+    /* Secondary */
+    --secondary: 220 15% 18%;
+    --secondary-foreground: 60 10% 90%;
+    
+    /* Muted surfaces */
+    --muted: 220 15% 15%;
+    --muted-foreground: 220 10% 55%;
+    
+    /* Accent */
+    --accent: 350 40% 25%;
+    --accent-foreground: 350 60% 75%;
+    
+    /* Destructive - for high risk */
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Borders - visible, intentional */
+    --border: 60 10% 75%;
+    --input: 220 15% 20%;
+    --ring: 60 10% 75%;
+    
+    --radius: 0.25rem;
+    
+    /* Risk colors */
+    --risk-low: 142 60% 50%;
+    --risk-low-foreground: 0 0% 7%;
+    --risk-medium: 45 90% 55%;
+    --risk-medium-foreground: 0 0% 7%;
+    --risk-high: 0 72% 55%;
+    --risk-high-foreground: 0 0% 100%;
+    
+    /* Strategy colors - brighter for dark mode */
+    --strategy-staking: 200 80% 60%;
+    --strategy-dex: 280 70% 65%;
+    --strategy-rwa: 25 90% 60%;
+    --strategy-lending: 160 60% 55%;
+    
+    /* Yield bar */
+    --yield-bar-bg: 220 10% 92%;
+    --yield-bar-fill: 350 60% 65%;
+    
+    /* Sidebar (if needed later) */
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  
+  /* Pixel font utility */
+  .font-pixel {
+    font-family: 'Press Start 2P', cursive;
+  }
+  
+  /* Mono font utility */
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer utilities {
+  /* Pixel-style box */
+  .pixel-box {
+    @apply border-2 border-foreground bg-card;
+  }
+  
+  /* Pixel hover lift */
+  .pixel-hover {
+    @apply transition-transform duration-100 ease-out;
+  }
+  
+  .pixel-hover:hover {
+    transform: translateY(-2px);
+  }
+  
+  /* Progress bar pixel style */
+  .pixel-progress {
+    @apply h-2 bg-[hsl(var(--yield-bar-bg))] border border-foreground;
+  }
+  
+  .pixel-progress-fill {
+    @apply h-full bg-[hsl(var(--yield-bar-fill))];
+  }
+}
+
+/* Custom scrollbar - minimal */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--foreground) / 0.3);
+  border: 1px solid hsl(var(--foreground));
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--foreground) / 0.5);
+}
