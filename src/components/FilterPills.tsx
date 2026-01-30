@@ -22,7 +22,7 @@ const FilterPills = ({
   onRiskToggle,
 }: FilterPillsProps) => {
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+    <div className="flex flex-col gap-3">
       {/* Strategy filters */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="font-pixel text-[8px] text-muted-foreground uppercase">Strategy:</span>
@@ -56,10 +56,10 @@ const FilterPills = ({
               key={risk}
               onClick={() => onRiskToggle(risk)}
               className={`
-                border-2 border-transparent px-3 py-1.5 font-mono text-xs transition-all
+                border-2 px-3 py-1.5 font-mono text-xs transition-all
                 ${isSelected 
                   ? riskColors[risk]
-                  : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                  : 'border-muted-foreground/30 bg-muted text-muted-foreground hover:bg-muted/80 hover:border-foreground'
                 }
               `}
             >

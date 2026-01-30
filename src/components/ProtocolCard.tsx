@@ -103,7 +103,7 @@ const ProtocolCard = ({ protocol, isSelected = false, onToggleComparison, isDisa
             >
               {protocol.strategy}
             </span>
-            <span className={`px-2 py-1 font-mono text-[10px] ${riskColors[protocol.risk]}`}>
+            <span className={`border-2 border-transparent px-2 py-1 font-mono text-[10px] ${riskColors[protocol.risk]}`}>
               {protocol.risk}
             </span>
           </div>
@@ -128,50 +128,50 @@ const ProtocolCard = ({ protocol, isSelected = false, onToggleComparison, isDisa
               ${isHovered ? 'max-h-32 opacity-100' : 'max-h-0 opacity-0'}
             `}
           >
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               {protocol.founderTwitter && (
                 <div className="flex items-center gap-2">
-                  <span className="font-pixel text-[8px] text-muted-foreground">FOUNDER X:</span>
+                  <span className="font-pixel text-[10px] text-muted-foreground">FOUNDER X:</span>
                   <a
                     href={protocol.founderTwitter}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    <Twitter className="h-3 w-3" />
+                    <Twitter className="h-4 w-4" />
                   </a>
                 </div>
               )}
               
               {protocol.projectTwitter && (
                 <div className="flex items-center gap-2">
-                  <span className="font-pixel text-[8px] text-muted-foreground">PROJECT X:</span>
+                  <span className="font-pixel text-[10px] text-muted-foreground">PROJECT X:</span>
                   <a
                     href={protocol.projectTwitter}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    <Twitter className="h-3 w-3" />
+                    <Twitter className="h-4 w-4" />
                   </a>
                 </div>
               )}
               
               {protocol.email && (
                 <div className="flex items-center gap-2">
-                  <span className="font-pixel text-[8px] text-muted-foreground">EMAIL:</span>
+                  <span className="font-pixel text-[10px] text-muted-foreground">EMAIL:</span>
                   <a
                     href={`mailto:${protocol.email}`}
                     className="text-muted-foreground transition-colors hover:text-foreground"
                   >
-                    <Mail className="h-3 w-3" />
+                    <Mail className="h-4 w-4" />
                   </a>
                 </div>
               )}
               
               {protocol.funders.length > 0 && (
-                <p className="font-mono text-[10px] text-muted-foreground">
-                  <span className="font-pixel text-[8px]">FUNDERS:</span> {protocol.funders.join(', ')}
+                <p className="font-mono text-xs text-muted-foreground">
+                  <span className="font-pixel text-[10px]">FUNDERS:</span> {protocol.funders.join(', ')}
                 </p>
               )}
             </div>
