@@ -3,7 +3,7 @@
  * Handles fetching and transforming data from Notion database
  */
 
-import { getProtocolEmoji, getStrategyColor, generateWebsiteURL } from './notionMapping';
+import { getProtocolEmoji, getStrategyColor, generateWebsiteURL } from './notionMapping.js';
 
 export interface Protocol {
   id: string;

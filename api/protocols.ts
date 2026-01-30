@@ -6,7 +6,7 @@
  */
 
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { fetchProtocolsFromNotion } from '../src/lib/notionService';
+import { fetchProtocolsFromNotion } from '../src/lib/notionService.js';
 
 export default async function handler(
   req: VercelRequest,
