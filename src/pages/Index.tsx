@@ -7,6 +7,9 @@ import ComparisonBar from '@/components/ComparisonBar';
 import ComparisonModal from '@/components/ComparisonModal';
 import LoadingState from '@/components/LoadingState';
 import ErrorState from '@/components/ErrorState';
+import Sidebar from '@/components/Sidebar';
+import CompareView from '@/components/CompareView';
+import { parseURLState, updateURL } from '@/lib/urlState';
 import type { Protocol } from '@/data/mockProtocols';
 
 const Index = () => {
@@ -15,11 +18,38 @@ const Index = () => {
   const [selectedRisks, setSelectedRisks] = useState<string[]>([]);
   const [selectedForComparison, setSelectedForComparison] = useState<string[]>([]);
   const [isComparisonModalOpen, setIsComparisonModalOpen] = useState(false);
+  const [currentView, setCurrentView] = useState<'discover' | 'compare'>('discover');
   
   // API state
   const [protocols, setProtocols] = useState<Protocol[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Initialize from URL on mount
+  useEffect(() => {
+    const { view, protocols: urlProtocols } = parseURLState();
+    setCurrentView(view);
+    if (urlProtocols.length > 0) {
+      setSelectedForComparison(urlProtocols);
+    }
+  }, []);
+
+  // Update URL when state changes
+  useEffect(() => {
+    updateURL(currentView, selectedForComparison);
+  }, [currentView, selectedForComparison]);
+
+  // Handle browser back/forward navigation
+  useEffect(() => {
+    const handlePopState = () => {
+      const { view, protocols: urlProtocols } = parseURLState();
+      setCurrentView(view);
+      setSelectedForComparison(urlProtocols);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
 
   // Fetch protocols from API on mount
   useEffect(() => {
@@ -81,12 +111,21 @@ const Index = () => {
 
   const handleClearComparison = () => {
     setSelectedForComparison([]);
+    setCurrentView('discover'); // Navigate back to discover when clearing
   };
 
   const handleCompare = () => {
     if (selectedForComparison.length >= 2) {
       setIsComparisonModalOpen(true);
     }
+  };
+
+  const handleNavigate = (view: 'discover' | 'compare') => {
+    setCurrentView(view);
+  };
+
+  const handleNavigateToDiscover = () => {
+    setCurrentView('discover');
   };
 
   const filteredProtocols = useMemo(() => {
@@ -121,94 +160,115 @@ const Index = () => {
   }, [protocols]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <TopBar />
-      
-      <main className="container py-6 pb-24">
-        {/* Loading State */}
-        {isLoading && (
-          <div className="space-y-6">
-            <div className="mb-4">
-              <div className="h-10 w-full animate-pulse bg-muted" />
-            </div>
-            <LoadingState />
-          </div>
-        )}
-
-        {/* Error State */}
-        {!isLoading && error && (
-          <ErrorState message={error} onRetry={fetchProtocols} />
-        )}
-
-        {/* Main Content */}
-        {!isLoading && !error && (
-          <>
-            {/* Search */}
-            <div className="mb-4">
-              <SearchBar value={searchQuery} onChange={setSearchQuery} />
-            </div>
-            
-            {/* Filters */}
-            <div className="mb-6">
-              <FilterPills
-                availableStrategies={uniqueStrategies}
-                selectedStrategies={selectedStrategies}
-                selectedRisks={selectedRisks}
-                onStrategyToggle={handleStrategyToggle}
-                onRiskToggle={handleRiskToggle}
-              />
-            </div>
-            
-            {/* Protocol count */}
-            <div className="mb-4 flex items-center justify-between">
-              <p className="font-mono text-xs text-muted-foreground">
-                {filteredProtocols.length} protocol{filteredProtocols.length !== 1 ? 's' : ''}
-              </p>
-              {(selectedStrategies.length > 0 || selectedRisks.length > 0 || searchQuery) && (
-                <button
-                  onClick={() => {
-                    setSearchQuery('');
-                    setSelectedStrategies([]);
-                    setSelectedRisks([]);
-                  }}
-                  className="font-pixel text-[8px] text-muted-foreground hover:text-foreground"
-                >
-                  CLEAR ALL
-                </button>
-              )}
-            </div>
-            
-            {/* Grid */}
-            <DashboardGrid 
-              protocols={filteredProtocols} 
-              selectedForComparison={selectedForComparison}
-              onComparisonToggle={handleComparisonToggle}
-            />
-            
-            {/* Footer tagline */}
-            <footer className="mt-12 border-t border-muted-foreground/20 pt-6 text-center">
-              <p className="font-mono text-[10px] text-muted-foreground">
-                A curated index of on-chain yield opportunities
-              </p>
-            </footer>
-          </>
-        )}
-      </main>
-
-      {/* Comparison Bar */}
-      <ComparisonBar
-        selectedProtocols={selectedProtocolsData}
-        onRemove={handleRemoveFromComparison}
-        onClear={handleClearComparison}
-        onCompare={handleCompare}
+    <div className="flex min-h-screen bg-background">
+      {/* Sidebar Navigation */}
+      <Sidebar
+        currentView={currentView}
+        selectedCount={selectedForComparison.length}
+        onNavigate={handleNavigate}
       />
 
-      {/* Comparison Modal */}
-      <ComparisonModal
-        open={isComparisonModalOpen}
-        onOpenChange={setIsComparisonModalOpen}
-        protocols={selectedProtocolsData}
-      />
+      {/* Main Content Area */}
+      <div className="flex-1 ml-16 md:ml-60">
+        <TopBar />
+        
+        {currentView === 'discover' ? (
+          <main className="container py-6 pb-24">
+            {/* Loading State */}
+            {isLoading && (
+              <div className="space-y-6">
+                <div className="mb-4">
+                  <div className="h-10 w-full animate-pulse bg-muted" />
+                </div>
+                <LoadingState />
+              </div>
+            )}
+
+            {/* Error State */}
+            {!isLoading && error && (
+              <ErrorState message={error} onRetry={fetchProtocols} />
+            )}
+
+            {/* Main Content */}
+            {!isLoading && !error && (
+              <>
+                {/* Search */}
+                <div className="mb-4">
+                  <SearchBar value={searchQuery} onChange={setSearchQuery} />
+                </div>
+                
+                {/* Filters */}
+                <div className="mb-6">
+                  <FilterPills
+                    availableStrategies={uniqueStrategies}
+                    selectedStrategies={selectedStrategies}
+                    selectedRisks={selectedRisks}
+                    onStrategyToggle={handleStrategyToggle}
+                    onRiskToggle={handleRiskToggle}
+                  />
+                </div>
+                
+                {/* Protocol count */}
+                <div className="mb-4 flex items-center justify-between">
+                  <p className="font-mono text-xs text-muted-foreground">
+                    {filteredProtocols.length} protocol{filteredProtocols.length !== 1 ? 's' : ''}
+                  </p>
+                  {(selectedStrategies.length > 0 || selectedRisks.length > 0 || searchQuery) && (
+                    <button
+                      onClick={() => {
+                        setSearchQuery('');
+                        setSelectedStrategies([]);
+                        setSelectedRisks([]);
+                      }}
+                      className="font-pixel text-[8px] text-muted-foreground hover:text-foreground"
+                    >
+                      CLEAR ALL
+                    </button>
+                  )}
+                </div>
+                
+                {/* Grid */}
+                <DashboardGrid 
+                  protocols={filteredProtocols} 
+                  selectedForComparison={selectedForComparison}
+                  onComparisonToggle={handleComparisonToggle}
+                />
+                
+                {/* Footer tagline */}
+                <footer className="mt-12 border-t border-muted-foreground/20 pt-6 text-center">
+                  <p className="font-mono text-[10px] text-muted-foreground">
+                    A curated index of on-chain yield opportunities
+                  </p>
+                </footer>
+              </>
+            )}
+          </main>
+        ) : (
+          <CompareView
+            selectedProtocols={selectedProtocolsData}
+            onRemove={handleRemoveFromComparison}
+            onClear={handleClearComparison}
+            onNavigateToDiscover={handleNavigateToDiscover}
+          />
+        )}
+
+        {/* Comparison Bar - Only show in discover view */}
+        {currentView === 'discover' && (
+          <ComparisonBar
+            selectedProtocols={selectedProtocolsData}
+            onRemove={handleRemoveFromComparison}
+            onClear={handleClearComparison}
+            onCompare={handleCompare}
+          />
+        )}
+
+        {/* Comparison Modal */}
+        <ComparisonModal
+          open={isComparisonModalOpen}
+          onOpenChange={setIsComparisonModalOpen}
+          protocols={selectedProtocolsData}
+        />
+      </div>
     </div>
   );
 };
